@@ -40,7 +40,7 @@ function Deposit(){
       {/* 뒤로가기 버튼 */}
       <div>
         <button
-          onClick = {() => navigate(-1)}
+          onClick = {() => navigate('/market/bid/:id')}
           style={{
             backgroundColor: '#eee',
             border: 'none',

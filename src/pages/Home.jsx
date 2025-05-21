@@ -81,7 +81,7 @@ function Home(){
       alert('상품 등록을 원하실 경우 [마이페이지-사업자] 인증을 완료해주세요!');
     }else{
       window.location.href = '/sell'; // 사업자 인증 완료시 이동
-    }navigate('/auctionregister');
+    }navigate('/market/bid/:id');
   };
 
   return (
