@@ -2,26 +2,26 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>사당해요</title>
+
+    <!-- favicon -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+    <!-- ✅ Kakao Maps JavaScript API -->
     <script 
       type="text/javascript" 
-      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c253dd20ef05b5cd16a5630472d1143a">
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c253dd20ef05b5cd16a5630472d1143a&libraries=services">
     </script>
+
+    <!-- ✅ Toss Payments API -->
     <script src="https://js.tosspayments.com/v1/payment"></script>
-
-
-
   </head>
+
   <body>
     <div id="root"></div>
+
+    <!-- ✅ React/Vite 엔트리포인트 -->
     <script type="module" src="/src/main.jsx"></script>
-    
   </body>
 </html>
-
-<!-- 
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c253dd20ef05b5cd16a5630472d1143a"></script>
--->
-
