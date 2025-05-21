@@ -47,7 +47,7 @@ function App() {
         <Route path="/failbid" element={<FailBid />} />
         <Route path="/bid/manage/:id" element={<SellerBid />} />
 
-        {/* 보증금예치 */}
+        {/* 보증금예치 */}    
         <Route path="/deposit" element={<Deposit />} />
         <Route path="/payment-success" element={<PaymentSuccess />}/>
         <Route path="/payment-fail" element={<PaymentFail />}/>
