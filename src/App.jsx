@@ -24,7 +24,7 @@ import FailBid from "./pages/FailBid";
 import SellerBid from "./pages/SellerBid";
 
 import JChatListPage from "./pages/JChatListPage";
-import JChatRoomPage from "./pages/JChatRoomPage";   // ✅ 이것만 사용
+import JChatRoomPage from "./pages/JChatRoomPage";
 
 import JMyPage from "./pages/JMyPage";
 import JBusinessVerify from "./pages/JBusinessVerify";
@@ -35,10 +35,10 @@ import JPurchasesPage from "./pages/JPurchasesPage";
 import JAuctionsPage from "./pages/JAuctionsPage";
 
 import JItemListPage from "./pages/JItemListPage";
-import JItemDetailPage from "./pages/JItemDetailPage"; // 필요하면 유지
+import JItemDetailPage from "./pages/JItemDetailPage";
 
 import JSellerItemPage from "./pages/JSellerItemPage";
-import JSellerItemDetailPage from "./pages/JSellerItemDetailPage"; // ✅ 한 번만!
+import JSellerItemDetailPage from "./pages/JSellerItemDetailPage";
 import JTossPayment from "./pages/JTossPayment";
 
 /* 공통 */
