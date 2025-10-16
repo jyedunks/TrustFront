@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-
+const BASE_URL = "http://localhost:8080/api";
 
 export default function JLoginPage() {
   const navigate = useNavigate();
@@ -9,8 +9,9 @@ export default function JLoginPage() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
-  
 
+
+/*
   // ✅ 일반 로그인 (예시)
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -27,6 +28,42 @@ export default function JLoginPage() {
       setLoading(false);
     }
   };
+*/
+const onSubmit = async (e) => {
+  e.preventDefault();
+  setErr("");
+  setLoading(true);
+
+  try {
+    // 백엔드 로그인 요청
+    const res = await fetch(`${BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: form.id,       // ✅ 백엔드 DTO에 맞게 필드명 변경
+        password: form.pw,
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error("로그인 실패");
+    }
+
+    const data = await res.json(); // { accessToken: "..." } 형태 기대
+    if (!data.accessToken) {
+      throw new Error("토큰 없음");
+    }
+
+    // ✅ 토큰 저장 + 홈 이동
+    localStorage.setItem("access_token", data.accessToken);
+    navigate("/home");
+  } catch (e) {
+    console.error(e);
+    setErr("로그인 실패: 아이디 또는 비밀번호를 확인해주세요.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // ✅ 카카오 로그인 버튼 클릭 시 링크 이동 (백에서 처리)
   const onKakao = () => {

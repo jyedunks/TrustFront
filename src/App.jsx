@@ -41,6 +41,8 @@ import JSellerItemPage from "./pages/JSellerItemPage";
 import JSellerItemDetailPage from "./pages/JSellerItemDetailPage";
 import JTossPayment from "./pages/JTossPayment";
 
+import JChatTest from "./pages/JChatTest";
+
 /* 공통 */
 import BottomNav from "./components/BottomNav";
 
@@ -133,6 +135,9 @@ function App() {
           <Route path="/my/verify" element={<JBusinessVerify />} />
           <Route path="/my/withdraw" element={<JWithdrawPage />} />
         </Route>
+
+
+        <Route path="/_test/chat" element={<JChatTest />} />
 
         {/* 그 외 경로 */}
         <Route

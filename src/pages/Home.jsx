@@ -112,7 +112,7 @@ function Home() {
   };
 
   const HEADER_HEIGHT = 56;
-
+/*
  // 지도 초기화 로직
   useEffect(() => {
     // 카카오 지도 API 로드 대기
@@ -169,7 +169,45 @@ function Home() {
 
     initializeMap();
   }, []);
+*/
+useEffect(() => {
+  const initializeMap = () => {
+    if (!window.kakao || !window.kakao.maps || !mapRef.current) return;
 
+    const container = mapRef.current;
+    const options = {
+      center: new window.kakao.maps.LatLng(37.5665, 126.9780),
+      level: 3,
+    };
+    const map = new window.kakao.maps.Map(container, options);
+    mapInstance.current = map;
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        const loc = new window.kakao.maps.LatLng(latitude, longitude);
+        map.setCenter(loc);
+      },
+      () => console.warn('위치 접근 실패')
+    );
+  };
+
+  // ✅ SDK가 아직 로드되지 않은 경우
+  if (window.kakao && window.kakao.maps) {
+    window.kakao.maps.load(initializeMap);
+  } else {
+    // SDK가 완전히 준비될 때까지 기다림  
+    const checkKakaoReady = setInterval(() => {
+      if (window.kakao && window.kakao.maps) {
+        clearInterval(checkKakaoReady);
+        window.kakao.maps.load(initializeMap);
+      }
+    }, 100);
+
+    // 혹시 컴포넌트 언마운트 시 타이머 제거
+    return () => clearInterval(checkKakaoReady);
+  }
+}, []);
 
   return (
     <div
