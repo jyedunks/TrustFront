@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchMyItems } from '../api/item'; 
+// import { fetchMyItems } from '../api/item'; 
 
 // 홈과 동일한 디자인 시스템
 const colors = {
@@ -167,7 +167,7 @@ function ItemCard({ item, onClick }) {
 function SellList() {
   const navigate = useNavigate();
   //더미 판매물품
-  const [items, setItems] = useState([
+  const [items] = useState([
   {
     id: 1,
     name: '아이폰 14 Pro',
@@ -203,31 +203,13 @@ function SellList() {
 ]);
 
 
-  const [loading, setLoading] = useState(true);
+  const loading = false;
 
 
-  
-
-  useEffect(() => {
-    const getItems = async () => {
-      try {
-        const res = await fetchMyItems();
-        console.log(res.data);
-        setItems(res.data);
-      } catch (err) {
-        console.error('상품 목록을 불러오지 못했습니다:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getItems();
-  }, []);
+ 
 
   const handleItemClick = (itemId) => {
-    // 상품 상세 페이지로 이동
     console.log('상품 클릭:', itemId);
-    // navigate(`/item/${itemId}`);
   };
 
   const HEADER_HEIGHT = 56;

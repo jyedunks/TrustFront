@@ -92,7 +92,7 @@ function Home() {
       alert('상품 등록을 원하실 경우 [마이페이지-사업자] 인증을 완료해주세요!');
       return;
     }
-    navigate('/sell'); // 실제 판매 페이지 경로로 수정
+    navigate('/sellform'); // 실제 판매 페이지 경로로 수정
   };
 
   // 경매 클릭 (경로 수정)
@@ -102,7 +102,7 @@ function Home() {
       alert('상품 등록을 원하실 경우 [마이페이지-사업자] 인증을 완료해주세요!');
       return;
     }
-    navigate('/market/auction/register'); // 실제 경매 페이지 경로로 수정
+    navigate('/auctionregister'); // 실제 경매 페이지 경로로 수정
   };
 
   // 오버레이 클릭 시 드롭다운/옵션 닫기
