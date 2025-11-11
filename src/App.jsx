@@ -113,6 +113,7 @@ function App() {
           <Route path="/success" element={<SuccessBid />} />
           <Route path="/failbid" element={<FailBid />} />
           <Route path="/bid/manage/:id" element={<SellerBid />} />
+          
 
           {/* 결제 */}
           <Route path="/deposit" element={<Deposit />} />

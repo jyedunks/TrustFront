@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { categoryService } from '../api/CategoryService';
+import { productService } from '../api/ProductService';
 
 // 홈과 동일한 디자인 컬러
 const colors = {
@@ -48,9 +50,58 @@ function SellForm() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
-  const [category, setCategory] = useState('전자제품');
+  const [category, setCategory] = useState('');
+  const [categories, setCategories] = useState([]);
   const [images, setImages] = useState([]);
   const [previews, setPreviews] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [location, setLocation] = useState({
+    address: '서울특별시 서초구 테스트동 100-1',
+    latitude: 37.4845,
+    longitude: 127.0335,
+  });
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await categoryService.getCategories();
+        setCategories(data);
+        if (data.length > 0) {
+          setCategory(data[0].id); // 첫 번째 카테고리를 기본값으로
+        }
+      } catch (error) {
+        console.error('카테고리 조회 실패:', error);
+        // 에러 시 기본 카테고리 설정
+        setCategories([
+          { id: 1, categoryName: '전자제품' },
+          { id: 2, categoryName: '주방용품' },
+          { id: 3, categoryName: '가구' },
+          { id: 4, categoryName: '의류' },
+          { id: 5, categoryName: '기타' },
+        ]);
+        setCategory(1);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            address: '현재 위치',
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error('위치 가져오기 실패:', error);
+        }
+      );
+    }
+  }, []);
   
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -84,18 +135,52 @@ function SellForm() {
     setImages(updatedImages);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = {
-      title,
-      description,
-      price,
-      category,
-      images,
-    };
-    console.log('판매 등록 데이터:', formData);
-    alert('물품이 등록되었습니다!');
-    navigate('/');
+
+    // 유효성 검사
+    if (images.length === 0) {
+      alert('최소 1개의 이미지를 업로드해주세요.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const productData = {
+        title,
+        description,
+        price: parseInt(price),
+        categoryIds: [category],
+        sellerId: 'ffd9c396-b70e-4d59-8d04-fad7b1fa1df2',
+        images, // images를 productData에 포함
+        address: location.address,
+        latitude: location.latitude,
+        longitude: location.longitude,
+      };
+
+      const response = await productService.createSaleProduct(productData);
+      
+      console.log('물품 등록 성공:', response);
+      alert('물품이 등록되었습니다!');
+      navigate('/');
+      
+    } catch (error) {
+      console.error('물품 등록 실패:', error);
+      
+      if (error.response) {
+        // 서버 응답이 있는 경우
+        alert(`물품 등록 실패: ${error.response.data.message || '서버 오류가 발생했습니다.'}`);
+      } else if (error.request) {
+        // 요청은 보냈지만 응답이 없는 경우
+        alert('서버와 연결할 수 없습니다. 네트워크를 확인해주세요.');
+      } else {
+        // 요청 설정 중 오류가 발생한 경우
+        alert('물품 등록 중 오류가 발생했습니다.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const HEADER_HEIGHT = 56;
@@ -141,6 +226,7 @@ function SellForm() {
             alignItems: 'center',
             padding: 0,
           }}
+          disabled={isLoading}
         >
           <BackIcon />
         </button>
@@ -190,13 +276,16 @@ function SellForm() {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  cursor: 'pointer',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
                   backgroundColor: colors.white,
                   transition: 'all 0.2s ease',
+                  opacity: isLoading ? 0.5 : 1,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = colors.primary;
-                  e.currentTarget.style.backgroundColor = `${colors.primary}08`;
+                  if (!isLoading) {
+                    e.currentTarget.style.borderColor = colors.primary;
+                    e.currentTarget.style.backgroundColor = `${colors.primary}08`;
+                  }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = colors.border;
@@ -209,6 +298,7 @@ function SellForm() {
                   multiple
                   onChange={handleImageUpload}
                   style={{ display: 'none' }}
+                  disabled={isLoading}
                 />
                 <CameraIcon size={32} />
                 <span style={{ fontSize: 11, color: colors.textLight, marginTop: 4 }}>
@@ -251,11 +341,13 @@ function SellForm() {
                     borderRadius: '50%',
                     border: 'none',
                     backgroundColor: 'rgba(0,0,0,0.6)',
-                    cursor: 'pointer',
+                    cursor: isLoading ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
+                    opacity: isLoading ? 0.5 : 1,
                   }}
+                  disabled={isLoading}
                 >
                   <XIcon size={14} />
                 </button>
@@ -282,6 +374,7 @@ function SellForm() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
+            disabled={isLoading}
             placeholder="판매 물품 제목을 입력해주세요"
             style={{
               width: '100%',
@@ -293,10 +386,13 @@ function SellForm() {
               backgroundColor: colors.white,
               transition: 'all 0.2s ease',
               boxSizing: 'border-box',
+              opacity: isLoading ? 0.6 : 1,
             }}
             onFocus={(e) => {
-              e.target.style.borderColor = colors.primary;
-              e.target.style.boxShadow = `0 0 0 3px ${colors.primary}20`;
+              if (!isLoading) {
+                e.target.style.borderColor = colors.primary;
+                e.target.style.boxShadow = `0 0 0 3px ${colors.primary}20`;
+              }
             }}
             onBlur={(e) => {
               e.target.style.borderColor = colors.border;
@@ -320,7 +416,8 @@ function SellForm() {
           </label>
           <select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => setCategory(Number(e.target.value))}
+            disabled={isLoading}
             style={{
               width: '100%',
               padding: '14px 16px',
@@ -329,15 +426,16 @@ function SellForm() {
               borderRadius: 12,
               outline: 'none',
               backgroundColor: colors.white,
-              cursor: 'pointer',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
               boxSizing: 'border-box',
+              opacity: isLoading ? 0.6 : 1,
             }}
           >
-            <option>전자제품</option>
-            <option>가구</option>
-            <option>의류</option>
-            <option>도서</option>
-            <option>기타</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.categoryName}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -360,6 +458,7 @@ function SellForm() {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               required
+              disabled={isLoading}
               placeholder="45000"
               style={{
                 width: '100%',
@@ -372,10 +471,13 @@ function SellForm() {
                 backgroundColor: colors.white,
                 transition: 'all 0.2s ease',
                 boxSizing: 'border-box',
+                opacity: isLoading ? 0.6 : 1,
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = colors.primary;
-                e.target.style.boxShadow = `0 0 0 3px ${colors.primary}20`;
+                if (!isLoading) {
+                  e.target.style.borderColor = colors.primary;
+                  e.target.style.boxShadow = `0 0 0 3px ${colors.primary}20`;
+                }
               }}
               onBlur={(e) => {
                 e.target.style.borderColor = colors.border;
@@ -415,6 +517,7 @@ function SellForm() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
+            disabled={isLoading}
             placeholder="제품 상태, 사용 기간, 구매 시기 등을 자세히 입력해주세요"
             rows={6}
             style={{
@@ -430,10 +533,13 @@ function SellForm() {
               fontFamily: 'inherit',
               transition: 'all 0.2s ease',
               boxSizing: 'border-box',
+              opacity: isLoading ? 0.6 : 1,
             }}
             onFocus={(e) => {
-              e.target.style.borderColor = colors.primary;
-              e.target.style.boxShadow = `0 0 0 3px ${colors.primary}20`;
+              if (!isLoading) {
+                e.target.style.borderColor = colors.primary;
+                e.target.style.boxShadow = `0 0 0 3px ${colors.primary}20`;
+              }
             }}
             onBlur={(e) => {
               e.target.style.borderColor = colors.border;
@@ -445,30 +551,34 @@ function SellForm() {
         {/* 등록 버튼 */}
         <button
           type="submit"
+          disabled={isLoading}
           style={{
             width: '100%',
             padding: '16px',
             marginBottom: '30px',
-            backgroundColor: colors.primary,
+            backgroundColor: isLoading ? colors.textLight : colors.primary,
             color: colors.white,
             border: 'none',
             borderRadius: 12,
             fontSize: 16,
             fontWeight: 700,
-            cursor: 'pointer',
+            cursor: isLoading ? 'not-allowed' : 'pointer',
             boxShadow: `0 4px 12px ${colors.primary}40`,
             transition: 'all 0.2s ease',
+            opacity: isLoading ? 0.7 : 1,
           }}
           onMouseEnter={(e) => {
-            e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = `0 6px 16px ${colors.primary}50`;
+            if (!isLoading) {
+              e.target.style.transform = 'translateY(-2px)';
+              e.target.style.boxShadow = `0 6px 16px ${colors.primary}50`;
+            }
           }}
           onMouseLeave={(e) => {
             e.target.style.transform = 'translateY(0)';
             e.target.style.boxShadow = `0 4px 12px ${colors.primary}40`;
           }}
         >
-          등록하기
+          {isLoading ? '등록 중...' : '등록하기'}
         </button>
       </form>
     </div>
