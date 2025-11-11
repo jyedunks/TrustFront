@@ -8,7 +8,7 @@ export default function PaymentPage() {
 
   const title = sp.get("title") || "상품";
   const price = Number(sp.get("price") || 0);
-  const clientKey = import.meta.env.VITE_TOSS_TEST_CLIENT_KEY;
+  const clientKey = import.meta.env.VITE_TOSS_CLIENT_KEY;
 
   const [sheetOpen, setSheetOpen] = useState(false);
 

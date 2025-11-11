@@ -11,6 +11,14 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     open: false,
+    proxy: {
+      '/api': {
+        target: 'http://54.66.146.131:8080',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: false,
+      }
+    }
   },
 
   optimizeDeps: {
