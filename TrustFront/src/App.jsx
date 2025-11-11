@@ -38,12 +38,14 @@ import JBusinessVerify from "./pages/JBusinessVerify";
 import JWithdrawPage from "./pages/JWithdrawPage";
 import JProfilePage from "./pages/JProfilePage";
 import JSalesPage from "./pages/JSalesPage";
-import JPurchasesPage from "./pages/JPurchasesPage";
+import JMyBuyList from "./pages/JMyBuyList";
 import JAuctionsPage from "./pages/JAuctionsPage";
+import JMySellList from "./pages/JMySellList";
 
 /* 상품 */
 import JItemListPage from "./pages/JItemListPage";
 import JItemDetailPage from "./pages/JItemDetailPage";
+import JSellForm from "./pages/JSellForm";
 
 /* 일반거래(판매자) */
 import JSellerItemPage from "./pages/JSellerItemPage";
@@ -58,6 +60,7 @@ import JChatTest from "./pages/JChatTest";
 
 /* 공통 컴포넌트 */
 import BottomNav from "./components/BottomNav";
+
 
 /* 보호 래퍼 */
 function Protected({ isLoggedIn, children }) {
@@ -136,10 +139,10 @@ export default function App() {
           <Route path="/my/seller-item/:id" element={<JSellerItemDetailPage />} />
 
           {/* 일반 거래 */}
-          <Route path="/market/buy" element={<JSellerItemPage />} />
-          <Route path="/market/buy/:id" element={<JSellerItemDetailPage />} />
+          <Route path="/market/buy" element={<JItemListPage />} />
+          <Route path="/market/buy/:id" element={<JItemDetailPage />} />
           <Route path="/market/sell" element={<SellList />} />
-          <Route path="/sellform" element={<SellForm />} />
+          <Route path="/JSellForm" element={<JSellForm />} />
 
           {/* 경매 */}
           <Route path="/market/auction" element={<AuctionList />} />
@@ -162,11 +165,19 @@ export default function App() {
           {/* 마이페이지 */}
           <Route path="/my" element={<JMyPage />} />
           <Route path="/my/profile" element={<JProfilePage />} />
-          <Route path="/my/sell" element={<SellList />} />
-          <Route path="/my/purchase" element={<JPurchasesPage />} />
+          <Route path="/my/sell-list" element={<JMySellList />} />
+          <Route path="/my/buy-list" element={<JMyBuyList />} />
           <Route path="/my/auction" element={<JAuctionsPage />} />
           <Route path="/my/verify" element={<JBusinessVerify />} />
           <Route path="/my/withdraw" element={<JWithdrawPage />} />
+
+          {/* ===== FAB 호환용 별칭(리다이렉트) ===== */}
+          {/* Home의 플로팅 버튼이 /sell, /market/auction/register 로 이동하므로 맞춰줌 */}
+          <Route path="/sell" element={<Navigate to="/JSellForm" replace />} />
+          <Route
+            path="/market/auction/register"
+            element={<Navigate to="/auctionregister" replace />}
+          />
         </Route>
 
         {/* ===== 테스트 라우트(선택) ===== */}

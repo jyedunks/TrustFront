@@ -3,45 +3,41 @@ import react from '@vitejs/plugin-react'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 import path from 'path'
 
-// 환경변수로 덮어쓸 수 있음: VITE_PROXY_TARGET=http://<host>:<port>
 const PROXY_TARGET = process.env.VITE_PROXY_TARGET || 'http://54.66.146.131:8080'
 
 export default defineConfig({
   plugins: [react()],
-
-  // 경로 별칭 (예: "@/api/chat")
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+    alias: { '@': path.resolve(__dirname, './src') },
   },
-
-  // ✅ dev 서버 + 프록시
   server: {
+    host: '0.0.0.0',
+    port: 5173,
+    open: false,
     proxy: {
       '/api': {
-        target: 'http://54.66.146.131:8080',
+        target: PROXY_TARGET,
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ''), // "/api/chat/.." -> "/chat/.."
+        rewrite: (p) => p.replace(/^\/api/, ''),
+      },
+      // 개발 중 직접 경로로 호출할 경우 대비
+      '/product': {
+        target: PROXY_TARGET,
+        changeOrigin: true,
+        secure: false,
+      },
+      '/item': {
+        target: PROXY_TARGET,
+        changeOrigin: true,
+        secure: false,
       },
     },
   },
-
-
-  // ✅ esbuild 최적화 옵션 (여기에 server 넣지 않기)
   optimizeDeps: {
     esbuildOptions: {
-      define: {
-        global: 'globalThis',
-      },
-      plugins: [
-        NodeGlobalsPolyfillPlugin({
-          buffer: true,
-          process: true,
-        }),
-      ],
+      define: { global: 'globalThis' },
+      plugins: [NodeGlobalsPolyfillPlugin({ buffer: true, process: true })],
     },
   },
 })
-

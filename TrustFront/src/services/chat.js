@@ -1,21 +1,12 @@
 // src/services/chat.js
-import api from "../lib/api";
+import client, { apiPath } from "./client";
 
-export async function createRoom({ sellerId, buyerId, itemId }) {
-  const { data } = await api.post("/api/chat/room", { sellerId, buyerId, itemId });
-  return typeof data === "string" ? data : data.roomId || data.id;
+export function getUserRooms(userUuid) {
+  return client.get(apiPath(`/chat/rooms/${encodeURIComponent(userUuid)}`));
 }
+export const listMyRooms = getUserRooms;
 
-export async function sendMessage({ roomId, senderId, content, timestamp = Date.now() }) {
-  const { data } = await api.post("/api/chat/message", {
-    roomId,
-    senderId,
-    content,
-    timestamp,
-    read: false,
-  });
-  return data;
+export function getMessages(roomId, params) {
+  const url = apiPath(`/chat/messages/${encodeURIComponent(roomId)}`);
+  return params ? client.get(url, { params }) : client.get(url);
 }
-
-// (목록 조회는 스펙 받으면 추가)
-// export async function listMessages(roomId) { ... }

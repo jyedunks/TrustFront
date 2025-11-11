@@ -1,15 +1,17 @@
-// src/api/client.js
+// src/services/client.js
 import axios from "axios";
 
-const BASE = import.meta.env.VITE_API_BASE_URL || ""; // 없으면 상대경로(지양)
-const PREFIX = import.meta.env.VITE_API_PREFIX || ""; // 예: "/api" 또는 ""
+const BASE = import.meta.env.VITE_API_BASE_URL || "";   // 
+const PREFIX = import.meta.env.VITE_API_PREFIX || "";   // 예: /api  (없으면 빈값)
+
+console.log("[API] BASE =", BASE, "PREFIX =", PREFIX); // ← 콘솔에서 반드시 확인!
 
 const client = axios.create({
-  baseURL: BASE,         // 예: http://54.66.xxx.xxx:8080
-  withCredentials: true, // 쿠키 인증 쓰면 true
+  baseURL: BASE,          // <- 이게 비지 않으면 5173으로 안 갑니다.
+  withCredentials: true,  // 쿠키 인증 시 필요
 });
 
-// 요청 인터셉터: 토큰 자동 부착
+// 토큰 자동 부착
 client.interceptors.request.use((config) => {
   const token =
     localStorage.getItem("ACCESS_TOKEN") || localStorage.getItem("accessToken");
@@ -17,7 +19,7 @@ client.interceptors.request.use((config) => {
   return config;
 });
 
-// 응답 인터셉터: res.data만 꺼내기 + 에러 메시지 통일
+// data만 꺼내기 + 에러 메시지 통일
 client.interceptors.response.use(
   (res) => res.data,
   (err) => {
@@ -29,7 +31,7 @@ client.interceptors.response.use(
   }
 );
 
-// 경로 유틸: prefix 자동붙이기
-export const apiPath = (p) => `${PREFIX}${p}`; // p는 "/auth/me" 같이 시작
+// 모든 경로 앞에 prefix 자동 부착
+export const apiPath = (p) => `${PREFIX}${p}`;
 
 export default client;
